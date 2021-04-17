@@ -14,11 +14,11 @@ interface CodeCellProps {
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const [code, setCode] = useState('')
   const [error, setError] = useState('')
-  const [input, setInput] = useState('')
+  const { updateCell } = useActions()
 
   useEffect(() => {
     const timer = setTimeout(async () => {
-      const output = await bundle(input)
+      const output = await bundle(cell.content)
       setCode(output.code)
       setError(output.err)
     }, 800);
@@ -26,7 +26,7 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     return () => {
       clearTimeout(timer)
     }
-  }, [input])
+  }, [cell.content])
 
 
 
@@ -36,8 +36,8 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
       <div style={{ height: '100%', display: 'flex', flexDirection: 'row' }}>
         <Resizable direction="horizontal">
           <CodeEditor
-            initialValue="console.log('Hello World !')"
-            onChange={(value) => setInput(value)}
+            initialValue={cell.content}
+            onChange={(value) => updateCell(cell.id, value)}
           />
         </Resizable>
         <Preview error={error} code={code} />
